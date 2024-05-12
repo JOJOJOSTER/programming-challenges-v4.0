@@ -1,15 +1,4 @@
 ﻿#include <iostream>
-#include <io.h>
-#include <fcntl.h>
-
-const unsigned char option1 = 0x01; // шестнадцатеричный литерал для 0000 0001
-const unsigned char option2 = 0x02; // шестнадцатеричный литерал для 0000 0010
-const unsigned char option3 = 0x04; // шестнадцатеричный литерал для 0000 0100
-const unsigned char option4 = 0x08; // шестнадцатеричный литерал для 0000 1000
-const unsigned char option5 = 0x10; // шестнадцатеричный литерал для 0001 0000
-const unsigned char option6 = 0x20; // шестнадцатеричный литерал для 0010 0000
-const unsigned char option7 = 0x40; // шестнадцатеричный литерал для 0100 0000
-const unsigned char option8 = 0x80; // шестнадцатеричный литерал для 1000 0000
 
 const unsigned char TWO_BYTES_UNICODE = 0xC0; // шестнадцатеричный литерал для 1100 0000
 const unsigned char THREE_BYTES_UNICODE = 0xE0; // шестнадцатеричный литерал для 1110 0000
@@ -47,7 +36,15 @@ const uint8_t STANDART_BYTE_MASK = 0b0011'1111;
 // TO-DO: Сделать прямой вывод hex кода
 
 
-void PrintDecimalToUTF8(uint32_t decimal)
+void PrintUTF8(const uint8_t *utf8_symbol,	const short length)
+{
+	for (int byte_index = 0; byte_index < length; byte_index++)
+	{
+		std::cout << std::hex << "\\x" << static_cast<int>(utf8_symbol[byte_index]);
+	}
+}
+
+void DecimalToUTF8AndPrint(uint32_t decimal)
 {
 	using namespace std;
 
@@ -74,7 +71,7 @@ void PrintDecimalToUTF8(uint32_t decimal)
 	if (symbol_size == 1)
 	{
 		utf[0] |= (decimal);
-		cout << hex << "\\x" << static_cast<int>(utf[0]) << '\n';
+		PrintUTF8(utf, symbol_size);
 	}
 	else if (symbol_size == 2)
 	{
@@ -95,8 +92,7 @@ void PrintDecimalToUTF8(uint32_t decimal)
 		utf[1] = STANDART_BYTE;
 		utf[1] |= (decimal & STANDART_BYTE_MASK);
 
-		cout << hex << "\\x" << static_cast<int>(utf[0]);
-		cout << hex << "\\x" << static_cast<int>(utf[1]) << '\n';
+		PrintUTF8(utf, symbol_size);
 
 	}
 	else if (symbol_size == 3)
@@ -110,9 +106,7 @@ void PrintDecimalToUTF8(uint32_t decimal)
 		utf[2] = STANDART_BYTE;
 		utf[2] |= (  decimal & STANDART_BYTE_MASK);
 
-		cout << hex << "\\x" << static_cast<int>(utf[0]);
-		cout << hex << "\\x" << static_cast<int>(utf[1]);
-		cout << hex << "\\x" << static_cast<int>(utf[2]) << '\n';
+		PrintUTF8(utf, symbol_size);
 	}
 	else if (symbol_size == 4)
 	{
@@ -128,11 +122,8 @@ void PrintDecimalToUTF8(uint32_t decimal)
 		utf[3] = STANDART_BYTE;
 		utf[3] |= (  decimal & STANDART_BYTE_MASK);
 
-
-		cout << hex << "\\x" << static_cast<int>(utf[0]);
-		cout << hex << "\\x" << static_cast<int>(utf[1]);
-		cout << hex << "\\x" << static_cast<int>(utf[2]);
-		cout << hex << "\\x" << static_cast<int>(utf[3]) << '\n';
+		PrintUTF8(utf, symbol_size);
+		
 	}
 
 	// Освобождаем память
@@ -156,7 +147,9 @@ int main()
 	wchar_t four_bytes = U'𒉹';
 
 
-	PrintDecimalToUTF8(5672);
+
+
+	DecimalToUTF8AndPrint(128591);
 
 
 	//unsigned short utf_array[] = '\xe2', '\x98', '\xad';
